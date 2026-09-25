@@ -1,0 +1,19 @@
+services:
+  anonymizer:
+    build: .
+    image: wildlife-anonymizer:latest
+    # 一键启动：docker compose up --build
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      # 容器内监听端口（如修改，需与上面的容器端口一致）
+      PORT: "8000"
+    restart: unless-stopped
+    # 匿名化全部在内存中完成，不挂载任何数据卷，原始记录不落盘。
+    read_only: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

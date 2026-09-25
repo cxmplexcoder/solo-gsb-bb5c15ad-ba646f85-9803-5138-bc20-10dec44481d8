@@ -1,0 +1,18 @@
+{
+  "id_field": "id",
+  "k": 2,
+  "records_a": [
+    {"id": "obs-001", "reserve": "神农架", "observer": "志愿者A"},
+    {"id": "obs-002", "reserve": "神农架", "observer": "志愿者B"},
+    {"id": "obs-003", "reserve": "卧龙",   "observer": "志愿者C"},
+    {"id": "obs-004", "reserve": "卧龙",   "observer": "志愿者D"}
+  ],
+  "fields_a": ["reserve"],
+  "records_b": [
+    {"id": "obs-001", "weather": "晴"},
+    {"id": "obs-002", "weather": "阴"},
+    {"id": "obs-003", "weather": "晴"},
+    {"id": "obs-004", "weather": "阴"}
+  ],
+  "fields_b": ["weather"]
+}

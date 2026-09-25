@@ -1,0 +1,12 @@
+{
+  "k": 2,
+  "max_zoom": 8,
+  "records": [
+    {"id": "obs-001", "latitude": 31.741, "longitude": 110.682, "species": "金丝猴"},
+    {"id": "obs-002", "latitude": 31.744, "longitude": 110.679, "species": "金丝猴"},
+    {"id": "obs-003", "latitude": 31.512, "longitude": 110.301, "species": "林麝"},
+    {"id": "obs-004", "latitude": 31.509, "longitude": 110.298, "species": "林麝"},
+    {"id": "obs-005", "latitude": 30.912, "longitude": 102.971, "species": "云豹"},
+    {"id": "obs-006", "latitude": 30.908, "longitude": 102.975, "species": "云豹"}
+  ]
+}

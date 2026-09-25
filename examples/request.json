@@ -1,0 +1,26 @@
+{
+  "k": 3,
+  "records": [
+    {"id": "obs-001", "species": "金丝猴", "reserve": "神农架-老君山", "observer": "志愿者A", "weather": "晴"},
+    {"id": "obs-002", "species": "金丝猴", "reserve": "神农架-老君山", "observer": "志愿者B", "weather": "阴"},
+    {"id": "obs-003", "species": "金丝猴", "reserve": "神农架-大九湖", "observer": "志愿者C", "weather": "晴"},
+    {"id": "obs-004", "species": "林麝", "reserve": "神农架-大九湖", "observer": "志愿者D", "weather": "雨"},
+    {"id": "obs-005", "species": "林麝", "reserve": "卧龙-邓生", "observer": "志愿者E", "weather": "阴"},
+    {"id": "obs-006", "species": "林麝", "reserve": "卧龙-邓生", "observer": "志愿者F", "weather": "晴"},
+    {"id": "obs-007", "species": "云豹", "reserve": "卧龙-耿达", "observer": "志愿者G", "weather": "雨"},
+    {"id": "obs-008", "species": "云豹", "reserve": "卧龙-耿达", "observer": "志愿者H", "weather": "晴"}
+  ],
+  "fields": {
+    "species": {
+      "金丝猴": ["金丝猴", "灵长类", "哺乳动物", "*"],
+      "林麝": ["林麝", "有蹄类", "哺乳动物", "*"],
+      "云豹": ["云豹", "食肉目", "哺乳动物", "*"]
+    },
+    "reserve": {
+      "神农架-老君山": ["神农架-老君山", "神农架", "湖北", "*"],
+      "神农架-大九湖": ["神农架-大九湖", "神农架", "湖北", "*"],
+      "卧龙-邓生": ["卧龙-邓生", "卧龙", "四川", "*"],
+      "卧龙-耿达": ["卧龙-耿达", "卧龙", "四川", "*"]
+    }
+  }
+}

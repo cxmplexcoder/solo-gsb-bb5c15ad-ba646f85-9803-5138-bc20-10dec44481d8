@@ -1,0 +1,12 @@
+{
+  "k": 2,
+  "max_window_hours": 4,
+  "records": [
+    {"id": "obs-001", "observed_at": "2026-03-15T08:12:00+00:00", "species": "金丝猴"},
+    {"id": "obs-002", "observed_at": "2026-03-15T08:45:00+00:00", "species": "金丝猴"},
+    {"id": "obs-003", "observed_at": "2026-03-15T09:05:00+00:00", "species": "林麝"},
+    {"id": "obs-004", "observed_at": "2026-03-15T09:30:00+00:00", "species": "林麝"},
+    {"id": "obs-005", "observed_at": "2026-03-15T16:20:00+08:00", "species": "云豹"},
+    {"id": "obs-006", "observed_at": "2026-03-15T16:50:00+08:00", "species": "云豹"}
+  ]
+}
