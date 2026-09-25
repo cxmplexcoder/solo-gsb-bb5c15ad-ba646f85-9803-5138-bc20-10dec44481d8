@@ -1,0 +1,13 @@
+{
+  "k": 2,
+  "max_zoom": 6,
+  "max_window_hours": 6,
+  "records": [
+    {"id": "obs-001", "latitude": 31.741, "longitude": 110.682, "observed_at": "2026-03-15T08:12:00+00:00", "species": "金丝猴"},
+    {"id": "obs-002", "latitude": 31.744, "longitude": 110.679, "observed_at": "2026-03-15T08:45:00+00:00", "species": "金丝猴"},
+    {"id": "obs-003", "latitude": 31.512, "longitude": 110.301, "observed_at": "2026-03-15T09:05:00+00:00", "species": "林麝"},
+    {"id": "obs-004", "latitude": 31.509, "longitude": 110.298, "observed_at": "2026-03-15T10:30:00+00:00", "species": "林麝"},
+    {"id": "obs-005", "latitude": 30.912, "longitude": 102.971, "observed_at": "2026-03-15T22:00:00+08:00", "species": "云豹"},
+    {"id": "obs-006", "latitude": 30.908, "longitude": 102.975, "observed_at": "2026-03-15T22:50:00+08:00", "species": "云豹"}
+  ]
+}
