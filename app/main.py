@@ -19,6 +19,7 @@ from .anonymizer import (
 )
 from .geo import MAX_ZOOM_LIMIT, assign_cells, prepare_points
 from .intersection import audit_intersections
+from .spacetime import prepare_spacetime_records, solve_spacetime
 from .time_windows import MAX_WINDOW_HOURS_LIMIT, assign_windows, prepare_records
 
 API_PREFIX = "/api/v1"
@@ -37,8 +38,12 @@ app = FastAPI(
         "划分为连续时间窗，每窗至少 k 条且首末小时跨度不超过上限，"
         "全局最优最小化各窗“记录数×跨度小时”之和，"
         "输出各 id 所属的半开 UTC 小时区间。"
+        "另提供时空联合匿名化：全球统一层级四分格与午夜对齐等宽小时窗"
+        "交叉形成联合组，枚举可行的 (z, 窗口宽度) 使每个非空联合组至少"
+        "k 条，最大化 4^z×24/宽度，平局先取较短窗再取较大 z，"
+        "输出各 id 的 z/x/y 与半开 UTC 窗口。"
     ),
-    version="1.3.0",
+    version="1.4.0",
 )
 
 
@@ -208,6 +213,61 @@ class TimeAnonymizeResponse(BaseModel):
     total_records: int
 
 
+class SpacetimeAnonymizeRequest(BaseModel):
+    """时空联合匿名化请求体。"""
+
+    # 拒绝 bool 冒充整数；k 必须为正整数。
+    k: StrictInt = Field(..., description="每个非空时空联合组至少包含的记录数")
+    # 拒绝 bool 冒充整数；max_zoom 必须在 0～12 之间。
+    max_zoom: StrictInt = Field(..., description="网格最大层级（0～12）")
+    # 拒绝 bool 冒充整数；max_window_hours 必须在 1～24 之间。
+    max_window_hours: StrictInt = Field(
+        ..., description="午夜对齐等宽窗口的最大小时宽度（1～24，宽度须整除 24）"
+    )
+    records: list[dict[str, Any]] = Field(
+        ...,
+        description=(
+            "同一 UTC 日期内含唯一 id、合法经纬度 latitude/longitude 与"
+            "带时区 observed_at 的观测记录"
+        ),
+    )
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class SpacetimeAssignment(BaseModel):
+    """一条记录的发布信息（id、z/x/y 与半开 UTC 窗口，不回传原坐标与时刻）。"""
+
+    id: str
+    z: int
+    x: int
+    y: int
+    window_start: str
+    window_end: str
+
+
+class SpacetimeGroup(BaseModel):
+    """一个发布联合组：z/x/y、半开 UTC 窗口 [start, end) 与人数。"""
+
+    z: int
+    x: int
+    y: int
+    window_start: str
+    window_end: str
+    count: int
+
+
+class SpacetimeAnonymizeResponse(BaseModel):
+    """时空联合匿名化结果。"""
+
+    records: list[SpacetimeAssignment]
+    groups: list[SpacetimeGroup]
+    k: int
+    max_zoom: int
+    max_window_hours: int
+    total_records: int
+
+
 @app.get("/")
 def root() -> dict[str, str]:
     """服务信息。"""
@@ -219,6 +279,7 @@ def root() -> dict[str, str]:
         "audit_intersection": f"{API_PREFIX}/audit-intersection",
         "geo_anonymize": f"{API_PREFIX}/geo-anonymize",
         "time_anonymize": f"{API_PREFIX}/time-anonymize",
+        "spacetime_anonymize": f"{API_PREFIX}/spacetime-anonymize",
     }
 
 
@@ -364,6 +425,57 @@ def time_anonymize(request: TimeAnonymizeRequest) -> TimeAnonymizeResponse:
         ],
         windows=[TimeWindow(**window) for window in windows],
         k=request.k,
+        max_window_hours=request.max_window_hours,
+        total_records=len(request.records),
+    )
+
+
+@app.post(
+    f"{API_PREFIX}/spacetime-anonymize",
+    response_model=SpacetimeAnonymizeResponse,
+)
+def spacetime_anonymize(
+    request: SpacetimeAnonymizeRequest,
+) -> SpacetimeAnonymizeResponse:
+    """为观测坐标与时间生成统一层级的联合匿名发布：返回各 id 的格与窗口。"""
+    if request.k < 1:
+        raise unprocessable("k 必须是正整数（>= 1）")
+
+    if not 0 <= request.max_zoom <= MAX_ZOOM_LIMIT:
+        raise unprocessable(
+            f"max_zoom 必须是 0 到 {MAX_ZOOM_LIMIT} 之间的整数"
+        )
+
+    if not 1 <= request.max_window_hours <= MAX_WINDOW_HOURS_LIMIT:
+        raise unprocessable(
+            f"max_window_hours 必须是 1 到 {MAX_WINDOW_HOURS_LIMIT} 之间的整数"
+        )
+
+    # 记录总数小于 k：任何联合组（至少存在一个）都不可能达到 k 条。
+    if len(request.records) < request.k:
+        raise unprocessable(
+            f"记录总数 {len(request.records)} 小于 k={request.k}，无法满足 k-匿名"
+        )
+
+    ids, lats, lons, hours, common_date = prepare_spacetime_records(request.records)
+    assignments, groups = solve_spacetime(
+        lats,
+        lons,
+        hours,
+        common_date,
+        request.k,
+        request.max_zoom,
+        request.max_window_hours,
+    )
+
+    return SpacetimeAnonymizeResponse(
+        records=[
+            SpacetimeAssignment(id=obs_id, **assignment)
+            for obs_id, assignment in zip(ids, assignments)
+        ],
+        groups=[SpacetimeGroup(**group) for group in groups],
+        k=request.k,
+        max_zoom=request.max_zoom,
         max_window_hours=request.max_window_hours,
         total_records=len(request.records),
     )
